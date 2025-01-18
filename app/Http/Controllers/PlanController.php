@@ -2,7 +2,9 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Plan;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Validator;
 
 class PlanController extends Controller
 {
@@ -13,72 +15,56 @@ class PlanController extends Controller
      */
     public function index()
     {
-        //
+        return response()->json(Plan::all(), 200);
     }
 
-    /**
-     * Show the form for creating a new resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
-    public function create()
-    {
-        //
-    }
-
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @return \Illuminate\Http\Response
-     */
-    public function store(Request $request)
-    {
-        //
-    }
-
-    /**
-     * Display the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function show($id)
     {
-        //
+        $plan = Plan::find($id);
+        if (!$plan) {
+            return response()->json(['message' => 'Plan not found'], 404);
+        }
+        return response()->json($plan, 200);
     }
 
-    /**
-     * Show the form for editing the specified resource.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
-    public function edit($id)
+    public function store(Request $request)
     {
-        //
+        $validator = Validator::make($request->all(), ['name' => 'required|string|max:255', 'price' => 'required|numeric', 'description' => 'sometimes|string',]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+        $plan = new Plan();
+        $plan->name = $request->name;
+        $plan->price = $request->price;
+        $plan->description = $request->description;
+        $plan->save();
+        return response()->json($plan, 201);
     }
 
-    /**
-     * Update the specified resource in storage.
-     *
-     * @param  \Illuminate\Http\Request  $request
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function update(Request $request, $id)
     {
-        //
+        $plan = Plan::find($id);
+        if (!$plan) {
+            return response()->json(['message' => 'Plan not found'], 404);
+        }
+        $validator = Validator::make($request->all(), ['name' => 'sometimes|string|max:255', 'price' => 'sometimes|numeric', 'description' => 'sometimes|string',]);
+        if ($validator->fails()) {
+            return response()->json($validator->errors(), 422);
+        }
+        $plan->name = $request->name ?? $plan->name;
+        $plan->price = $request->price ?? $plan->price;
+        $plan->description = $request->description ?? $plan->description;
+        $plan->save();
+        return response()->json($plan, 200);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     *
-     * @param  int  $id
-     * @return \Illuminate\Http\Response
-     */
     public function destroy($id)
     {
-        //
+        $plan = Plan::find($id);
+        if (!$plan) {
+            return response()->json(['message' => 'Plan not found'], 404);
+        }
+        $plan->delete();
+        return response()->json(null, 204);
     }
 }
