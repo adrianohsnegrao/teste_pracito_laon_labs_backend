@@ -13,9 +13,16 @@ class MovieController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        $movies = Movie::all();
+        $user = $request->user();
+
+        if ($user->plan->name === 'premium') {
+            $movies = Movie::all();
+        } else {
+            $movies = Movie::where('genre', '!=', 'exclusive')->get();
+        }
+
         return response()->json($movies, 200);
     }
     public function show($id)

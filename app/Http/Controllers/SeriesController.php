@@ -13,9 +13,16 @@ class SeriesController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
-    public function index()
+    public function index(Request $request)
     {
-        return response()->json(Series::all(), 200);
+        $user = $request->user();
+        if ($user->plan->name === 'premium') {
+            $series = Series::all();
+        } else {
+            $series = Series::where('genre', '!=', 'exclusive')->get();
+        }
+
+        return response()->json($series, 200);
     }
 
     public function show($id)
