@@ -50,4 +50,8 @@ class User extends Authenticatable
     {
         return $this->belongsTo(Plan::class);
     }
+    public function profileLevel()
+    {
+        return $this->belongsTo(ProfileLevel::class);
+    }
 }

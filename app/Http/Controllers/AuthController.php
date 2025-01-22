@@ -12,20 +12,34 @@ class AuthController extends Controller
 {
     public function register(Request $request)
     {
+        $user = Auth::user();
+
+        // Impedir que um usuário Default crie novos usuários
+        if ($user->profile_level_id == 3) {
+            return response()->json(['message' => 'Default users cannot create new users'], 403);
+        }
+
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8|confirmed',
+            'profile_level_id' => 'required|exists:profile_levels,id',
         ]);
 
         if ($validator->fails()) {
             return response()->json($validator->errors(), 422);
         }
 
+        // Impedir que um usuário Administrator crie usuários Master
+        if ($user->profile_level_id == 2 && $request->profile_level_id == 1) {
+            return response()->json(['message' => 'Administrators cannot create Master users'], 403);
+        }
+
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
+            'profile_level_id' => $request->profile_level_id,
         ]);
 
         return response()->json($user, 201);
