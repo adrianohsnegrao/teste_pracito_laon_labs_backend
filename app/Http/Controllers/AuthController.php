@@ -12,8 +12,12 @@ class AuthController extends Controller
 {
     public function register(Request $request)
     {
+        // dd($request->all());
         $user = Auth::user();
 
+        if (!$user) {
+            return response()->json(['message' => 'User not authenticated'], 401);
+        }
         // Impedir que um usuário Default crie novos usuários
         if ($user->profile_level_id == 3) {
             return response()->json(['message' => 'Default users cannot create new users'], 403);
