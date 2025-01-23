@@ -28,8 +28,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::resource('series', SeriesController::class);
     Route::resource('movies', MovieController::class);
     Route::post('logout', [AuthController::class, 'logout']);
+    Route::post('register', [AuthController::class, 'register']);
 });
 
 Route::post('login', [AuthController::class, 'login']);
-Route::post('register', [AuthController::class, 'register']);
 
