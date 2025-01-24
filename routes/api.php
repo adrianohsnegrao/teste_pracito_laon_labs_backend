@@ -24,6 +24,7 @@ Route::get('/sanctum/csrf-cookie', [CsrfCookieController::class, 'show']);
 
 Route::middleware('auth:sanctum')->group(function () {
     Route::resource('users', UserController::class);
+    Route::get('/user', [AuthController::class, 'getAuthenticatedUser']);
     Route::resource('profiles', ProfileController::class);
     Route::resource('plans', PlanController::class);
     Route::resource('series', SeriesController::class);
